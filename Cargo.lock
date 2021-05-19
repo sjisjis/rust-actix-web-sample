@@ -1230,6 +1230,7 @@ name = "rust-actix-sample"
 version = "0.1.0"
 dependencies = [
  "actix-web",
+ "log",
  "r2d2_redis",
  "serde",
  "serde_derive",
