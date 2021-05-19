@@ -1,5 +1,5 @@
 [package]
-name = "rust-actix-sample"
+name = "actix_web"
 version = "0.1.0"
 authors = ["shouji <shouji.takumi@gmail.com>"]
 edition = "2018"
