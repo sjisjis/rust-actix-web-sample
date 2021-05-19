@@ -11,7 +11,7 @@ pub struct IdRequest {
     text: Option<String>,
 }
 
-#[actix_rt::main]
+#[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let manager = RedisConnectionManager::new("redis://localhost").unwrap();
     let redis_pool = r2d2::Pool::builder().build(manager).unwrap();
