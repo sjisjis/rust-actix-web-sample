@@ -3,6 +3,17 @@ use log::error;
 use r2d2_redis::{r2d2, redis::Commands, RedisConnectionManager};
 use serde_derive::Deserialize;
 use std::{ops::DerefMut, time::Duration};
+use structopt::StructOpt;
+
+#[derive(StructOpt, Debug)]
+struct Config {
+    #[structopt(long)]
+    workers: usize,
+    #[structopt(long)]
+    web_port: u16,
+    #[structopt(long)]
+    redis: String,
+}
 
 #[derive(Debug)]
 enum Error {
@@ -59,10 +70,13 @@ impl From<actix_web::error::BlockingError<Error>> for Error {
 
 #[actix_web::main]
 async fn main() -> Result<(), crate::Error> {
+
+    let config = Config::from_args();
+    
     let redis = r2d2::Pool::builder()
         .connection_timeout(Duration::from_secs(1))
         .test_on_check_out(false)
-        .build(RedisConnectionManager::new("redis://localhost")?)?;
+        .build(RedisConnectionManager::new(format!("redis://{}", config.redis))?)?;
 
     HttpServer::new(move || {
         App::new()
@@ -71,8 +85,8 @@ async fn main() -> Result<(), crate::Error> {
             .service(web::resource("/set").route(web::get().to(set)))
             .service(web::resource("/watcher").route(web::get().to(watcher)))
     })
-    .bind("localhost:8080")?
-    .workers(1)
+    .bind(("0.0.0.0", config.web_port))?
+    .workers(config.workers)
     .run()
     .await
     .map_err(crate::Error::from)?;

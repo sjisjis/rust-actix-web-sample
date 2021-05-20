@@ -1,9 +1,7 @@
 # start
 ```bash
-# redis
 $ docker-compose up -d
-# localhost:8080
-$ cargo run
+$ cargo run -- --workers 1 --web-port 8080 --redis localhost:6379/0
 ```
 
 # service
